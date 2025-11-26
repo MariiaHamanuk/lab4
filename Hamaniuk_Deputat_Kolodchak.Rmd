@@ -1,0 +1,91 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+**Work breakdown structure estimating the efforts of each team
+member:**\
+Task 1-2 did Anton Deputat and he did 33.33% of work.\
+Task 3 + general conclusions did Bohdan Kolodchak and he did 33.33% of
+work.\
+Task 4 did Mariia Hamaniuk and she did 33.33% of work.
+
+**Problem 1.** $H_0$ : $µ_1$ = $µ_2$ vs. $H_1$ : $µ_1$ ̸= $µ_2$;
+
+$\sigma^2_1$ = $\sigma^2_2$ =1
+
+**R Code:**
+
+```{r}
+
+```
+
+**The statistics obtained (like sample mean or anything else you use to
+complete the task):**
+
+**Conclusions:**
+
+**Problem 2.** $H_0$ : $\sigma^2_1$ = $\sigma^2_2$ vs. $H_1$ :
+$\sigma^2_1$ \> $\sigma^2_2$ ; $µ_1$ and $µ_2$ are unknown. (Hint: this
+is the f-test; read the details in Ross, p. 321–323)
+
+**the statistics obtained (like sample mean or anything else you use to
+complete the task):**
+
+**Conclusions:**
+
+**Problem 3.** Using Kolmogorov–Smirnov test in R, check if (a)
+${ x_k }_{k=1}^{100}$ are normally distributed (with parameters
+calculated from the sample); (b)${|x_k|}_{k=1}^{100}$ are exponentially
+distributed with λ = 1; (c) ${ x_k }_{k=1}^{100}$ and
+${ y_l }_{l=1}^{50}$ have the same distribution
+
+```{r}
+
+```
+
+Explain the main idea behind the KS test and comment on the outcomes of
+the test:
+
+Note: ${ x_k }_{k=1}^{100}$ means a set of a hundred xk with
+corresponding indices here, not their fractional part:
+
+**the statistics obtained (like sample mean or anything else you use to
+complete the task):**
+
+**Conclusions:**
+
+\
+
+**Problem 4.** In this task you’ll practice fitting the regression line
+to some real-life features and analyzing the results. The file data.csv
+contains data on students, specifically their study time and
+corresponding marks. Your tasks are as follows: (a) Create a scatter
+plot of Marks vs. Study Time and provide brief comments;
+
+```{r}
+
+```
+
+(b) Fit a linear regression model using marks as the dependent variable
+    and study time as the independent variable.
+
+```{r}
+
+```
+
+Explain shortly the process of deriving the regression equation:
+
+(c) Evaluate the goodness-of-fit for the fitted line;
+
+```{r}
+
+```
+
+**the statistics obtained (like sample mean or anything else you use to
+complete the task)**:
+
+**Conclusions:**
