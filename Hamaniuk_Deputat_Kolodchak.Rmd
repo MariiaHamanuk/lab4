@@ -17,25 +17,216 @@ Task 4 did Mariia Hamaniuk and she did 33.33% of work.
 
 $\sigma^2_1$ = $\sigma^2_2$ =1
 
+Before starting lets create some data:
+
+```{r}
+n <- 32 #id number
+
+# Function to calculate a_k = {k * log(k / (2*n) + pi)}
+ak_func <- function(k, n) {
+  val <- k * log(k / (2 * n) + pi)
+  return(val - floor(val))
+}
+
+k_values <- 1:150
+a_data <- ak_func(k_values, n)
+
+# Generate samples X and Y using qnorm
+# X: k = 1 to 100
+X <- qnorm(a_data[1:100])
+# Y: k = 101 to 150 (l = 1 to 50, k = l + 100)
+Y <- qnorm(a_data[101:150])
+
+# Sample sizes and sample means/variances
+n1 <- length(X)
+n2 <- length(Y)
+mean1 <- mean(X)
+mean2 <- mean(Y)
+var1 <- var(X) 
+var2 <- var(Y) 
+
+cat(paste("n1 (Length of X):", n1, "\n"))
+cat(paste("n2 (Length of Y):", n2, "\n"))
+cat(paste("Sample Mean (X):", mean1, "\n"))
+cat(paste("Sample Mean (Y):", mean2, "\n"))
+cat(paste("Sample Variance (X):", var1, "\n"))
+cat(paste("Sample Variance (Y):", var2, "\n"))
+```
+
+**Problem's Description:**
+
+Hypotheses: $H_0: \mu_1 = \mu_2$$H_1: \mu_1 \neq \mu_2$
+
+Assumptions: $\sigma_1^2 = \sigma_2^2 = 1$ (known)
+
+Significance Level: $\alpha = 0.05$
+
+**1. Standard Test Used and Why**
+
+The test used is the **Two-Sample Z-Test**.
+
+-   **Rationale:** We are comparing the means of two independent,
+    normally distributed populations, and crucially, the **population
+    variances (**$\sigma^2_1$ and $\sigma^2_2$) are known (both equal to
+    1). The Z-test is appropriate when population variances are known,
+    regardless of sample size.
+
+-   **Test Statistic Formula:**
+    $Z = \frac{\bar{X} - \bar{Y}}{\sqrt{\frac{\sigma^2_1}{n_1} + \frac{\sigma^2_2}{n_2}}} \sim N(0, 1)$
+
+**2. General Form of the Rejection Region**
+
+The test is **two-tailed** ($\text{H}_1: \mu_1 \neq \mu_2$).
+
+-   For $\alpha=0.05$, we find the critical values $z_{\alpha/2}$ and
+    $z_{1-\alpha/2}$ from the standard normal distribution.
+
+-   $z_{\text{crit}} = \Phi^{-1}(0.975) \approx 1.960$
+
+-   **Rejection Region:** Reject $\text{H}_0$ if $|Z| \geq 1.960$.
+
 **R Code:**
 
 ```{r}
+sigma2 <- 1 
+n1 <- length(X)
+n2 <- length(Y)
+p_value_z <- 2 * pnorm(z_stat) # pnorm is P(Z <= z_stat)
+
+# Calculate Z test statistic
+z_stat <- (mean(X) - mean(Y)) / sqrt(sigma2/n1 + sigma2/n2)
+cat(paste("Z Test Statistic:", z_stat, "\n"))
+cat(paste("P-value:", p_value_z, "\n"))
+# Critical value for alpha = 0.05, two-tailed
+z_crit <- qnorm(0.975)
+cat(paste("Critical Value (z_0.975):", z_crit, "\n"))
+
+# Check rejection
+reject_H0_z <- abs(z_stat) >= z_crit
+cat(paste("Reject H0 at 0.05 level?", reject_H0_z, "\n"))
+
 
 ```
 
 **The statistics obtained (like sample mean or anything else you use to
 complete the task):**
 
-**Conclusions:**
+**Conclusions:\
+**Test Statistic calculations:
+
+$$
+Z = \frac{-0.158 - (-0.369)}{\sqrt{\frac{1}{100} + \frac{1}{50}}}
+= \frac{0.211}{\sqrt{0.03}}
+\approx 1.218
+$$
+
+-   **Calculated Z-statistic:** \$\$Z \\approx 1.353\$
+
+-   **Comparison:** $|Z| = 1.353$ is **less than** the critical value
+    $1.960$.
+
+-   **Decision:** We **do not reject** $\text{H}_0$ at the $0.05$
+    significance level.
+
+**P-value:** The probability of observing a Z-statistic as extreme as
+$1.353$ in a two-tailed test is $2 \times P(Z \geq 1.353)$.
+
+Since the P-value of $0.176$ is **greater than** the significance level
+$\alpha=0.05$, we do not reject the null hypothesis. There is not enough
+evidence to conclude that the population means $\mu_1$ and $\mu_2$ are
+different.
 
 **Problem 2.** $H_0$ : $\sigma^2_1$ = $\sigma^2_2$ vs. $H_1$ :
 $\sigma^2_1$ \> $\sigma^2_2$ ; $µ_1$ and $µ_2$ are unknown. (Hint: this
 is the f-test; read the details in Ross, p. 321–323)
 
+**Problem's Description:**
+
+Hypotheses: $H_0: \sigma_1^2 = \sigma_2^2$ vs
+$H_1: \sigma_1^2 > \sigma_2^2$
+
+Assumptions: $\mu_1$ and $\mu_2$ are unknown.
+
+Significance Level: $\alpha = 0.05$
+
+**1. Standard Test Used and Why**
+
+The test used is the **F-Test for Equality of Two Variances**.
+
+-   **Rationale:** We are comparing the ratio of two population
+    variances ($\sigma^2_1$ and $\sigma^2_2$) from two independent,
+    normally distributed samples.
+
+-   **Test Statistic Formula:**
+    $F = \frac{S^2_1}{S^2_2} \sim F(n_1-1, n_2-1)$
+
+    -   Degrees of freedom: $df_1 = 100 - 1 = 99$ (Numerator) and
+        $df_2 = 50 - 1 = 49$ (Denominator).
+
+**2. General Form of the Rejection Region**
+
+The test is **right-tailed** ($\text{H}_1: \sigma^2_1 > \sigma^2_2$).
+
+-   For $\alpha=0.05$, we find the critical value $f_{1-\alpha}$ from
+    the F-distribution $F(99, 49)$.
+
+-   $f_{\text{crit}} = F_{0.95}(99, 49) \approx 1.583$
+
+-   **Rejection Region:** Reject $\text{H}_0$ if $F \geq 1.583$.
+
+**R code:**
+
+```{r}
+
+# Perform the F-test
+f_test_result <- var.test(X, Y, alternative = "greater")
+
+# Extract results
+f_stat <- f_test_result$statistic
+p_value_f <- f_test_result$p.value
+df1 <- f_test_result$parameter[1]
+df2 <- f_test_result$parameter[2]
+
+cat(paste("F Test Statistic:", f_stat, "\n"))
+cat(paste("Degrees of Freedom:", df1, "and", df2, "\n"))
+cat(paste("P-value:", p_value_f, "\n"))
+
+# Critical value (f_0.95)
+f_crit <- qf(0.95, df1 = df1, df2 = df2)
+cat(paste("Critical Value (f_0.95):", f_crit, "\n"))
+
+# Check rejection
+reject_H0_f <- f_stat >= f_crit
+cat(paste("Reject H0 at 0.05 level?", reject_H0_f, "\n"))
+```
+
 **the statistics obtained (like sample mean or anything else you use to
 complete the task):**
 
 **Conclusions:**
+
+-   Test Statistic Calculation:
+
+    $$
+    F = \frac{S_1^2}{S_2^2} = \frac{1.258}{1.000} \approx 1.258
+    $$
+
+-   **Calculated F-statistic:** $F \approx 1.258$
+
+-   **Comparison:** $F = 1.258$ is **less than** the critical value
+    $1.583$.
+
+-   **Decision:** We **do not reject** $\text{H}_0$ at the $0.05$
+    significance level.
+
+-   **P-value**: The probability of observing an F-statistic as large as
+    \$1.258\$ in the \$F(99, 49)\$ distribution.
+
+    Since the P-value of $0.165$ is **greater than** the significance
+    level $\alpha=0.05$, we do not reject the null hypothesis. There is
+    no statistically significant evidence to conclude that the
+    population variance of X ($\sigma^2_1$) is greater than the
+    population variance of Y ($\sigma^2_2$).
 
 **Problem 3.** Using Kolmogorov–Smirnov test in R, check if (a)
 ${ x_k }_{k=1}^{100}$ are normally distributed (with parameters
