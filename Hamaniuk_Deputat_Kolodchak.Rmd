@@ -249,34 +249,224 @@ complete the task):**
 
 **Conclusions:**
 
-\
-
 **Problem 4.** In this task you’ll practice fitting the regression line
 to some real-life features and analyzing the results. The file data.csv
 contains data on students, specifically their study time and
-corresponding marks. Your tasks are as follows: (a) Create a scatter
-plot of Marks vs. Study Time and provide brief comments;
+corresponding marks. Your tasks are as follows:
+
+(a) Create a scatter plot of Marks vs. Study Time and provide brief
+    comments;
 
 ```{r}
-
+id <- 19
+data <- read.csv("C:/Users/Mariia Hamaniuk/Desktop/r/lab4HamaniukDeputatKolodchak/data.csv")
+plot(data$time_study, data$Marks,
+     xlab = "Study Time",
+     ylab = "Marks",
+     pch = 18, col = "black")
+#min(data$time_study)
+#max(data$time_study)
+#min(data$Marks)
+#max(data$Marks)
 ```
+
+First of all the relationship is not 100% linear it has small curve, so
+simple linear model can a bit misfit our data. The relationship is
+positive which means: the longer you study the better results you get
+(this is not surprise). There is no visible and strong (extreme)
+outliers here. Range of data goes from 1 to 8 (time of study), 5-55
+grades. If we want to predict something bigger or smaller than what we
+have in data, we shouldn't (we simply don't know anything of that data
+maybe it would be linear maybe not, maybe no one can score more than
+55).
 
 (b) Fit a linear regression model using marks as the dependent variable
     and study time as the independent variable.
 
 ```{r}
+model <- lm(Marks ~ time_study, data = data)
+```
+
+visualization with fit
+
+```{r}
+plot(data$time_study, data$Marks,
+     main = "Marks vs. Study Time",
+     xlab = "Study Time (Hours)",
+     ylab = "Marks",
+     pch = 18, col = "black")
+abline(model, col = "red", lwd = 2)
+```
+```{r}
+# we can use formulas that are already in r 
+a <- coef(model)["(Intercept)"]
+b <- coef(model)["time_study"]
+cat("regression equation:\n mark = ", a, " + ", b, " * x\n (where x is the time person studied)")
+```
+
+```{r}
+#alterantively we can calculate manually as follows
+x <- data$time_study
+y <- data$Marks
+
+b_hat <- sum((x - mean(x)) * (y - mean(y))) / sum((x - mean(x))^2)
+
+a_hat <- mean(y) - (b_hat * mean(x))
+
+cat("a", a_hat, "\n")
+cat("b", b_hat, "\n")
+#and we can clearly see that they are the same
 
 ```
 
 Explain shortly the process of deriving the regression equation:
 
+we have to estimate this equation:
+
+$$\text{Mark} = a + \beta \times \text{time_study} + \epsilon$$
+
+residual = $mark_i - \hat{mark_i}$
+
+$\text{SumSquaredResiduals} = \sum_{i=1}^{n} (\text{mark} - \hat{\text{mark}})^2 = \sum_{i=1}^{n} (\text{mark} - (\hat{a} + \hat{\beta} \times \text{time_study}_i))^2$
+
+We need to minimize SSR by taking derivatives on a and b (derivatives
+after simplifing and plugining in estimator of beta):
+
+$\hat{a} = \overline{\text{mark}} - \hat{\beta} * \overline{\text{time_study}}$
+
+$\hat{\beta} = \frac{\sum_{i=1}^{n} (\text{time_study}_i - \overline{\text{time_study}})*(\text{mark}_i - \overline{\text{mark}})}{\sum_{i=1}^{n} (\text{time_study}_i - \overline{\text{time_study}})^2}$
+
+so we used OLS here.
+
 (c) Evaluate the goodness-of-fit for the fitted line;
 
+    ```{r}
+    summary(model)
+    ```
+We evaluate goodness of fit with coef. of determination or $R^2$ and
+    it equals to 0.88 which means that 88% of variability in marks is
+    explained by time of study. So we can say that study time is
+    actually pretty strong predictor. Let\`s consider other metrics such
+    as location: median is not really but still close to 0 which means
+    that it is not consistent in similar making errors (always
+    predicting more or predicting less). From this parameters we can say
+    that the fit is good but could be better (no optimal because our
+    data's relationship is not strictly linear)
+
+(d) Suggest a way to test whether the study time is significant in
+    predicting marks. Find the corresponding test statistics, specify
+    the distribution. Find p-value of the test and make a conclusion;
+
+    $H_0$: $\beta_1 = 0$ - which means that there is no linear
+    relationship of study time and marks. b = 0
+
+    $H_1$: $\beta_1 \neq 0$ - contrary there is linear relationship. b
+    does not = 0;
+
+    We need to estimate how many units are between estimate and
+    hypothetic value. We have only one sample so we can use Z-statistic
+    or T-statistic but we don't really have a variance so it is better
+    to use T-statistic. for t0, a = 0;
+
+    ${t_0} = \frac{\hat{\beta} - 0}{\text{SE}(\hat{\beta})}$
+
+    se = $\sqrt(mse/Sxx)$
+
+    mse = $RSE^2$ - this thing we take from summary
+
+    ```{r}
+    b - 0
+    mse <- 4.822^2
+    sxx <- sum((x - mean(x))^2)
+    se <- sqrt(mse/sxx)
+    se
+    b / se
+    ```
+  $t = \frac{5.68875}{0.2042338} = \mathbf{27.85411}$
+
+    Under $H_0$, this statistic follows a Student distr. with
+    n - (num of predictors) - 1degrees of freedom so 98 because one
+    predictor is 0 and error in our equation is obviously not a
+    predictor.
+
+    p-value is almost zero so we can reject $H_0$
+
 ```{r}
+summary(model)
+```
+e\. If Alice studies for approximately 8 hours, what grade can we
+predict for her?
+
+let's do it manually and then using the code and compare
+
+```         
+ 1.223858 + 5.68875 * 8 = 46.7343
+```
+
+```{r}
+study_time_alice <- 8
+print(a + b * study_time_alice)
 
 ```
+
+One interesting thing that I noticed about this task and linear
+regressions at all (it is a really obvious but when you have real data
+and we had marks which are in range 1-100 ) and we have limited data
+(not much data and not in a full range) and we try to predict for values
+in my case larger than 18 than it gives us values larger than 100 how to
+deal with that? everything that is larger cut to 100 and same for less
+than 0? And in general it is a bit dangerous to put value that are not
+in out data set.
+
+f\. Suggest up to three ideas to potentially improve prediction
+accuracy:
+
+1.  first thing that comes to mind is to add regions here or any other
+    factor that can influence output (private / public school, previous
+    results...). Because it depends whether you study in small city or
+    big, developing or developed country.
+2.  Make more test but it is expensive.
+3.  We can use some other type of regression not linear but something
+    curved. (like polynomial, parabola)
 
 **the statistics obtained (like sample mean or anything else you use to
 complete the task)**:
 
+```         
+median: -0.384
+min: -7.866
+max: 10.628 
+Residual standard error: 4.822 on 98 degrees of freedom 
+Multiple R-squared:  0.8878,	
+Adjusted R-squared:  0.8867  
+p-value: < 2.2e-16
+df: 98
+F-statistic: 775.8
+F-statistic DF:	1 and 98
+```
+
 **Conclusions:**
+
+Since the P-value for time of study is really close to 0 we reject null
+hypothesis$H_0: \beta = 0$, which means study time is a significant
+predictor of marks. The $R^2$ of $0.8878$ indicates a strong overall
+fit. The model explains almost 89% of the variation in student marks.
+Despite that just visualy one can tell that we can clearly do better
+than just a line when estimating (because our data creates a bit curved
+line). This nonoptimality is not only visually derived but also is
+confirmed by the relatively high rse$4.822$, which could be
+
+The predicted mark for Alice is $46.73$. taking into consideration rse
+than we can assume that actual alice's mark will fall within bounds of
+4.8 from predicted mark. Also here it would be more helpful to construct
+prediction interval to assure Alice that she needs to study 8 hours to
+maybe get dream mark.
+
+to be sure that my point is right I will test on non linear regression
+
+```{r}
+model2 <- lm(Marks ~ time_study + I(time_study^2), data = data)
+summary(model2)
+```
+
+and it is much better and it confirmed point above!
