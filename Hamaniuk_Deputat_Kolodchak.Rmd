@@ -234,22 +234,136 @@ calculated from the sample); (b)${|x_k|}_{k=1}^{100}$ are exponentially
 distributed with λ = 1; (c) ${ x_k }_{k=1}^{100}$ and
 ${ y_l }_{l=1}^{50}$ have the same distribution
 
+**Connections with Previous Problems:** In this analysis, we utilized the sample means and variances calculated in Problems 1 and 2 to define the parameters for the theoretical distributions. These estimates allowed us to construct the reference distributions for the one-sample Kolmogorov–Smirnov tests.
+
+####Quick overview of Kolmogorov-Smirnov test
+
+The Kolmogorov--Smirnov (KS) test is a nonparametric
+statistical test that compares a sample with a reference probability
+distribution (one-sample KS test) or compares two samples (two-sample KS
+test). The main idea is to measure the maximum difference between the
+empirical cumulative distribution function (ECDF) of the sample(s) and
+the theoretical or other empirical CDF. The test statistic is defined as
+
+$$
+D = \sup_x |F_n(x) - F_0(x)|
+$$
+
+for the one-sample test, or
+
+$$
+D = \sup_x |F_X(x) - F_Y(x)|
+$$
+
+for the two-sample KS test, where $F_n$ is the empirical CDF and $F_0$
+or $F_Y$ is the theoretical or second sample CDF. The KS test is widely
+used because it is
+sensitive to differences in location, scale, and shape of the
+distributions without making parametric assumptions. It is particularly
+useful for checking goodness-of-fit and
+comparing distributions.
+
+##### a)  Let\`s find out if our data is coresponding to our teoreticaly
+    calculated parametrs for normal distribution.
+
+Let's generate the theoretical data from normal distribution with
+parametrs which we found.
+
 ```{r}
+x_sorted <- sort(X)
+Fn <- ecdf(X)(x_sorted)
+F0 <- pnorm(x_sorted, mean1, sqrt(var1))
+
+max_dif <- max(abs(Fn - F0))
+cat("Max difference calculated by hand", max_dif, "\n")
+
+ks.test(X, "pnorm", mean1, sqrt(var1))
+
+plot(x_sorted, Fn, type = "s", col = "blue", lwd = 2,
+     xlab = "X", ylab = "CDF",
+     main = "Empirical CDF vs Theoretical Normal CDF")
+lines(x_sorted, F0, col = "red", lwd = 2)
+legend("topleft", legend = c("Empirical CDF", "Theoretical CDF"),
+       col = c("blue", "red"), lwd = 2)
+
+qqnorm(X, main = "QQ-Plot of X vs Normal Distribution")
+qqline(X, col = "red", lwd = 2)
 
 ```
 
-Explain the main idea behind the KS test and comment on the outcomes of
-the test:
+**Comment:** In this part, we compare the empirical distribution of the
+sample X with the theoretical normal distribution having the mean and
+variance estimated from the data. We compute the maximum vertical
+difference between the empirical CDF and the theoretical CDF, and then
+apply the one-sample Kolmogorov–Smirnov test. The KS test is
+particularly powerful because it is nonparametric and sensitive to any
+type of deviation (shifts, scaling, skewness, or tail behavior), unlike
+tests that target specific parameters. The resulting KS statistic (D =
+0.0516) is small, and the high p-value (0.9525) indicates that the
+sample is fully consistent with the assumed normal model.
 
-Note: ${ x_k }_{k=1}^{100}$ means a set of a hundred xk with
-corresponding indices here, not their fractional part:
+##### b)  Let\`s check if our X are similar to exponential distribution with $\lambda = 1$
 
-**the statistics obtained (like sample mean or anything else you use to
-complete the task):**
+```{r}
+x_sorted <- sort(abs(X))
+Fn <- ecdf(abs(X))(x_sorted)
+F0 <- pexp(x_sorted, rate = 1)
+max_dif <- max(abs(Fn - F0))
+cat("Max difference calculated by hand", max_dif, "\n")
+
+ks.test(abs(X), "pexp", 1)
+
+plot(x_sorted, Fn, type = "s", col = "blue", lwd = 2,
+     xlab = "X", ylab = "CDF",
+     main = "Absolute Empirical CDF vs Theoretical Exponential CDF")
+lines(x_sorted, F0, col = "red", lwd = 2)
+legend("topleft", legend = c("Absolute Empirical CDF", "Theoretical CDF"),
+       col = c("blue", "red"), lwd = 2)
+
+qqnorm(x_sorted, main = "QQ-Plot of Absolute X vs Exponential Distribution")
+qqline(x_sorted, col = "red", lwd = 2)
+
+```
+
+**Comment:** The maximum vertical difference between the empirical CDF of $∣X∣$ and the theoretical exponential CDF is moderate ($D≈0.136$). The p-value (0.05064) is very close to the 0.05 significance level, indicating borderline evidence against the null hypothesis. We are at the threshold, so the result is marginally consistent with an exponential distribution with $λ=1$. Therefore, the sample of absolute values of X may be considered roughly consistent with the exponential model. This suggests that taking absolute values reduces the deviation compared to using the original X values.
+
+##### c)  Let\`s find out if X has the same distribution as Y based on your generated data
+
+```{r}
+T <- sort(c(X, Y))
+F_X <- sapply(T, function(t) mean(X <= t))
+F_Y <- sapply(T, function(t) mean(Y <= t))
+max_dif <- max(abs(F_X - F_Y))
+cat("Max difference calculated by hand", max_dif, "\n")
+
+ks.test(X, Y)
+
+plot(T, F_X, type = "s", col = "blue", lwd = 2,
+     xlab = "Value", ylab = "ECDF",
+     main = "Empirical CDFs of X and Y")
+lines(T, F_Y, col = "red", lwd = 2)
+legend("topleft", legend = c("ECDF X", "ECDF Y"),
+       col = c("blue", "red"), lwd = 2)
+
+qqplot(X, Y, main = "QQ-Plot: X vs Y",
+       xlab = "X Quantiles", ylab = "Y Quantiles")
+abline(0, 1, col = "red", lwd = 2)
+
+```
+
+**Comment:** The maximum vertical difference between the empirical CDFs
+of X and Y is moderate ($D≈0.23$). The p-value (0.0555) is slightly
+above the 0.05 significance level, indicating no strong evidence against
+the null hypothesis. We do not reject $H0$ at the 0.05 level. Therefore,
+the samples X and Y can be considered consistent with having the same
+distribution. This suggests that there is no statistically significant
+difference between the two empirical distributions.
+
 
 **Conclusions:**
+Based on the KS tests, the sample $X$ is consistent with a normal distribution using its estimated parameters, the absolute values of $X$ are roughly consistent with an exponential distribution with $\lambda = 1$, and the samples $X$ and $Y$ do not show a statistically significant difference in their distributions. Therefore, the empirical evidence supports that the data generally aligns with the assumed theoretical models.
 
-\
+The ECDF plots and QQ-plots visually confirm these findings: the empirical distributions align closely with the theoretical curves, the quantiles of X and Y match well along the diagonal. Therefore, the empirical evidence supports that the data generally aligns with the assumed theoretical models, and the graphical representations reinforce the results of the KS tests.
 
 **Problem 4.** In this task you’ll practice fitting the regression line
 to some real-life features and analyzing the results. The file data.csv
