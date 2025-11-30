@@ -234,16 +234,20 @@ calculated from the sample); (b)${|x_k|}_{k=1}^{100}$ are exponentially
 distributed with λ = 1; (c) ${ x_k }_{k=1}^{100}$ and
 ${ y_l }_{l=1}^{50}$ have the same distribution
 
-**Connections with Previous Problems:** In this analysis, we utilized the sample means and variances calculated in Problems 1 and 2 to define the parameters for the theoretical distributions. These estimates allowed us to construct the reference distributions for the one-sample Kolmogorov–Smirnov tests.
+**Connections with Previous Problems:** In this analysis, we utilized
+the sample means and variances calculated in Problems 1 and 2 to define
+the parameters for the theoretical distributions. These estimates
+allowed us to construct the reference distributions for the one-sample
+Kolmogorov–Smirnov tests.
 
-####Quick overview of Kolmogorov-Smirnov test
+#### Quick overview of Kolmogorov-Smirnov test
 
-The Kolmogorov--Smirnov (KS) test is a nonparametric
-statistical test that compares a sample with a reference probability
-distribution (one-sample KS test) or compares two samples (two-sample KS
-test). The main idea is to measure the maximum difference between the
-empirical cumulative distribution function (ECDF) of the sample(s) and
-the theoretical or other empirical CDF. The test statistic is defined as
+The Kolmogorov--Smirnov (KS) test is a nonparametric statistical test
+that compares a sample with a reference probability distribution
+(one-sample KS test) or compares two samples (two-sample KS test). The
+main idea is to measure the maximum difference between the empirical
+cumulative distribution function (ECDF) of the sample(s) and the
+theoretical or other empirical CDF. The test statistic is defined as
 
 $$
 D = \sup_x |F_n(x) - F_0(x)|
@@ -257,14 +261,16 @@ $$
 
 for the two-sample KS test, where $F_n$ is the empirical CDF and $F_0$
 or $F_Y$ is the theoretical or second sample CDF. The KS test is widely
-used because it is
-sensitive to differences in location, scale, and shape of the
-distributions without making parametric assumptions. It is particularly
-useful for checking goodness-of-fit and
-comparing distributions.
+used because it is sensitive to differences in location, scale, and
+shape of the distributions without making parametric assumptions. It is
+particularly useful for checking goodness-of-fit and comparing
+distributions.
 
-##### a)  Let\`s find out if our data is coresponding to our teoreticaly
-    calculated parametrs for normal distribution.
+##### a) Let\`s find out if our data is coresponding to our teoreticaly
+
+```         
+calculated parametrs for normal distribution.
+```
 
 Let's generate the theoretical data from normal distribution with
 parametrs which we found.
@@ -302,7 +308,7 @@ tests that target specific parameters. The resulting KS statistic (D =
 0.0516) is small, and the high p-value (0.9525) indicates that the
 sample is fully consistent with the assumed normal model.
 
-##### b)  Let\`s check if our X are similar to exponential distribution with $\lambda = 1$
+##### b) Let\`s check if our X are similar to exponential distribution with $\lambda = 1$
 
 ```{r}
 x_sorted <- sort(abs(X))
@@ -325,9 +331,17 @@ qqline(x_sorted, col = "red", lwd = 2)
 
 ```
 
-**Comment:** The maximum vertical difference between the empirical CDF of $∣X∣$ and the theoretical exponential CDF is moderate ($D≈0.136$). The p-value (0.05064) is very close to the 0.05 significance level, indicating borderline evidence against the null hypothesis. We are at the threshold, so the result is marginally consistent with an exponential distribution with $λ=1$. Therefore, the sample of absolute values of X may be considered roughly consistent with the exponential model. This suggests that taking absolute values reduces the deviation compared to using the original X values.
+**Comment:** The maximum vertical difference between the empirical CDF
+of $∣X∣$ and the theoretical exponential CDF is moderate ($D≈0.136$).
+The p-value (0.05064) is very close to the 0.05 significance level,
+indicating borderline evidence against the null hypothesis. We are at
+the threshold, so the result is marginally consistent with an
+exponential distribution with $λ=1$. Therefore, the sample of absolute
+values of X may be considered roughly consistent with the exponential
+model. This suggests that taking absolute values reduces the deviation
+compared to using the original X values.
 
-##### c)  Let\`s find out if X has the same distribution as Y based on your generated data
+##### c) Let\`s find out if X has the same distribution as Y based on your generated data
 
 ```{r}
 T <- sort(c(X, Y))
@@ -359,11 +373,20 @@ the samples X and Y can be considered consistent with having the same
 distribution. This suggests that there is no statistically significant
 difference between the two empirical distributions.
 
+**Conclusions:** Based on the KS tests, the sample $X$ is consistent
+with a normal distribution using its estimated parameters, the absolute
+values of $X$ are roughly consistent with an exponential distribution
+with $\lambda = 1$, and the samples $X$ and $Y$ do not show a
+statistically significant difference in their distributions. Therefore,
+the empirical evidence supports that the data generally aligns with the
+assumed theoretical models.
 
-**Conclusions:**
-Based on the KS tests, the sample $X$ is consistent with a normal distribution using its estimated parameters, the absolute values of $X$ are roughly consistent with an exponential distribution with $\lambda = 1$, and the samples $X$ and $Y$ do not show a statistically significant difference in their distributions. Therefore, the empirical evidence supports that the data generally aligns with the assumed theoretical models.
-
-The ECDF plots and QQ-plots visually confirm these findings: the empirical distributions align closely with the theoretical curves, the quantiles of X and Y match well along the diagonal. Therefore, the empirical evidence supports that the data generally aligns with the assumed theoretical models, and the graphical representations reinforce the results of the KS tests.
+The ECDF plots and QQ-plots visually confirm these findings: the
+empirical distributions align closely with the theoretical curves, the
+quantiles of X and Y match well along the diagonal. Therefore, the
+empirical evidence supports that the data generally aligns with the
+assumed theoretical models, and the graphical representations reinforce
+the results of the KS tests.
 
 **Problem 4.** In this task you’ll practice fitting the regression line
 to some real-life features and analyzing the results. The file data.csv
@@ -413,6 +436,7 @@ plot(data$time_study, data$Marks,
      pch = 18, col = "black")
 abline(model, col = "red", lwd = 2)
 ```
+
 ```{r}
 # we can use formulas that are already in r 
 a <- coef(model)["(Intercept)"]
@@ -459,7 +483,8 @@ so we used OLS here.
     ```{r}
     summary(model)
     ```
-We evaluate goodness of fit with coef. of determination or $R^2$ and
+
+    We evaluate goodness of fit with coef. of determination or $R^2$ and
     it equals to 0.88 which means that 88% of variability in marks is
     explained by time of study. So we can say that study time is
     actually pretty strong predictor. Let\`s consider other metrics such
@@ -498,18 +523,19 @@ We evaluate goodness of fit with coef. of determination or $R^2$ and
     se
     b / se
     ```
-  $t = \frac{5.68875}{0.2042338} = \mathbf{27.85411}$
 
-    Under $H_0$, this statistic follows a Student distr. with
-    n - (num of predictors) - 1degrees of freedom so 98 because one
-    predictor is 0 and error in our equation is obviously not a
-    predictor.
+    $t = \frac{5.68875}{0.2042338} = \mathbf{27.85411}$
+
+    Under $H_0$, this statistic follows a Student distr. with n - (num
+    of predictors) - 1degrees of freedom so 98 because one predictor is
+    0 and error in our equation is obviously not a predictor.
 
     p-value is almost zero so we can reject $H_0$
 
 ```{r}
 summary(model)
 ```
+
 e\. If Alice studies for approximately 8 hours, what grade can we
 predict for her?
 
@@ -553,12 +579,12 @@ median: -0.384
 min: -7.866
 max: 10.628 
 Residual standard error: 4.822 on 98 degrees of freedom 
-Multiple R-squared:  0.8878,	
+Multiple R-squared:  0.8878,    
 Adjusted R-squared:  0.8867  
 p-value: < 2.2e-16
 df: 98
 F-statistic: 775.8
-F-statistic DF:	1 and 98
+F-statistic DF: 1 and 98
 ```
 
 **Conclusions:**
