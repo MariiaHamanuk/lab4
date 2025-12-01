@@ -20,7 +20,7 @@ $\sigma^2_1$ = $\sigma^2_2$ =1
 Before starting lets create some data:
 
 ```{r}
-n <- 19
+n <- 32
 
 ak_func <- function(k, n) {
   val <- k * log(k / (2 * n) + pi)
